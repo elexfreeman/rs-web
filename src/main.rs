@@ -5,7 +5,7 @@ use modules::sample::sample_ctrl::*;
 mod interfaces;
 
 mod system;
-use crate::system::*;
+use crate::system::sys_data::SysData;
 
 //async fn get_data() -> Result<ProductPageI, Error> {
 //    // URL, на который будем отправлять запрос
@@ -25,7 +25,7 @@ use crate::system::*;
 async fn main() -> std::io::Result<()> {
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
     log::info!("starting HTTP server at http://localhost:8080");
-    let user_data = web::Data::new(UserData {
+    let user_data = web::Data::new(SysData {
         sample_string: "default_value".to_string(),
     });
     HttpServer::new(move || {
