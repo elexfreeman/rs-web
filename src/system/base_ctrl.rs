@@ -1,23 +1,11 @@
-use std::sync::MutexGuard;
-use std::sync::Mutex;
-use actix_web::{ web::Data, HttpRequest};
+use crate::system::ctx_sys::CtxSys;
 
-use crate::system::sys_data::SysData;
-
-pub struct BaseCtrl {
-    pub req: HttpRequest,
+pub struct BaseCtrl<'a> {
+    pub ctx_sys: &'a CtxSys,
 }
 
-impl BaseCtrl {
-    pub fn new(req: HttpRequest) -> Self {
-        Self { req }
-    }
-
-    pub fn get_sys_data(&self) -> MutexGuard<'_, SysData>{
-        self.req
-            .app_data::<Data<Mutex<SysData>>>()
-            .unwrap()
-            .lock()
-            .unwrap()
+impl<'a> BaseCtrl<'a> {
+    pub fn new(ctx_sys: &'a CtxSys) -> Self {
+        BaseCtrl { ctx_sys }
     }
 }
