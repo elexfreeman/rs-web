@@ -5,12 +5,12 @@ use std::io::BufReader;
 use serde::Deserialize;
 use serde::Serialize;
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct AppConfig {
     pub port: i32,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct MongoConfig {
     pub db_host: String,
     pub db_port: i32,
@@ -19,7 +19,7 @@ pub struct MongoConfig {
     pub db_password: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize ,Clone)]
 pub struct Config {
     pub mongo_config: MongoConfig,
     pub app_config: AppConfig,
