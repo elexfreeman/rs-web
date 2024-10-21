@@ -2034,9 +2034,11 @@ dependencies = [
  "futures-util",
  "log",
  "mongodb",
+ "quote",
  "reqwest",
  "serde",
  "serde_json",
+ "syn 2.0.79",
  "validator",
 ]
 
