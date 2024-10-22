@@ -5,7 +5,7 @@ use crate::system::ctx_sys::CtxSys;
 use crate::system::error_s::response_error;
 
 use crate::modules::sample::sample_m::SampleM;
-use crate::modules::sample::sample_r::SampleRouteR;
+use crate::modules::sample::sample_r::SampleRouteR as R;
 
 struct SampleCtrl<'a> {
     ctx_sys: &'a CtxSys,
@@ -20,7 +20,7 @@ impl<'a> SampleCtrl<'a> {
 
     async fn sample_route_one(
         &self,
-        request: web::Json<SampleRouteR::Request>,
+        request: web::Json<R::SampleRoute::Request>,
     ) -> Result<HttpResponse, Error> {
         log::info!("Request from /some_route");
 
@@ -29,7 +29,7 @@ impl<'a> SampleCtrl<'a> {
 
         fa_action!(
             self.sample_m.get_data(request),
-            SampleRouteR::Response,
+            R::SampleRoute::Response,
             response_error
         )
         .await
@@ -37,12 +37,12 @@ impl<'a> SampleCtrl<'a> {
 
     async fn sample_route_two(
         &self,
-        request: web::Json<SampleRouteR::Request>,
+        request: web::Json<R::SampleRoute::Request>,
     ) -> Result<HttpResponse, Error> {
         log::info!("Request from /some_route_two");
         fa_action!(
             self.sample_m.get_data(request),
-            SampleRouteR::Response,
+            R::SampleRoute::Response,
             response_error
         )
         .await
@@ -55,11 +55,25 @@ impl<'a> SampleCtrl<'a> {
             Err(e) => Err(e),
         }
     }
+
+    async fn sample_route_add_user(
+        &self,
+        request: web::Json<R::SampleAddUser::Request>,
+    ) -> Result<HttpResponse, Error> {
+        log::info!("Request from /some_route_two");
+        fa_action!(
+            self.sample_m.add_user(request),
+            R::SampleAddUser::Response,
+            response_error
+        )
+        .await
+    }
+
 }
 
 #[post("/sample_route_one")]
 pub async fn sample_route_one(
-    body: web::Json<SampleRouteR::Request>,
+    body: web::Json<R::SampleRoute::Request>,
     req: HttpRequest,
 ) -> Result<HttpResponse, Error> {
     let ctx = CtxSys::new(req);
@@ -69,7 +83,7 @@ pub async fn sample_route_one(
 
 #[post("/sample_route_two")]
 pub async fn sample_route_two(
-    body: web::Json<SampleRouteR::Request>,
+    body: web::Json<R::SampleRoute::Request>,
     req: HttpRequest,
 ) -> Result<HttpResponse, Error> {
     let ctx = CtxSys::new(req);
@@ -79,10 +93,20 @@ pub async fn sample_route_two(
 
 #[post("/sample_init_user_data")]
 pub async fn sample_init_user_data(
-    body: web::Json<SampleRouteR::Request>,
+    _body: web::Json<R::SampleRoute::Request>,
     req: HttpRequest,
 ) -> Result<HttpResponse, Error> {
     let ctx = CtxSys::new(req);
     let ctrl = SampleCtrl::new(&ctx);
     ctrl.init_user_data().await
+}
+
+#[post("/sample_user_add")]
+pub async fn sample_route_add_user(
+    body: web::Json<R::SampleAddUser::Request>,
+    req: HttpRequest,
+) -> Result<HttpResponse, Error> {
+    let ctx = CtxSys::new(req);
+    let ctrl = SampleCtrl::new(&ctx);
+    ctrl.sample_route_add_user(body).await
 }

@@ -62,8 +62,6 @@ async fn main() -> std::io::Result<()> {
         config,
     });
 
-    //create_username_index(&user_data.client).await;
-
     log::info!(
         "starting HTTP server at http://[::1]:{}",
         app_port.to_string()
@@ -74,6 +72,7 @@ async fn main() -> std::io::Result<()> {
             .app_data(user_data.clone())
             .service(sample_route_one)
             .service(sample_route_two)
+            .service(sample_init_user_data)
     })
     .workers(4)
     .bind(format!("[::1]:{}", app_port))?

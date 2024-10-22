@@ -1,7 +1,9 @@
 use crate::infrastructure::sample_sql::entity::sample_user_e::User;
 use crate::system::ctx_sys::CtxSys;
 use mongodb::error::Error;
-use mongodb::{bson::doc, options::IndexOptions, Client, Collection, IndexModel};
+use mongodb::{
+    bson::doc, options::IndexOptions, results::InsertOneResult, Collection, IndexModel,
+};
 
 pub struct SampleUserSql<'a> {
     ctx_sys: &'a CtxSys,
@@ -14,7 +16,12 @@ impl<'a> SampleUserSql<'a> {
         Self { ctx_sys }
     }
 
-    pub async fn get_user(self, username: String) -> Result<Option<User>, Error> {
+    pub async fn add_user(&self, user: &User) -> Result<InsertOneResult, Error> {
+        let collection: Collection<User> = self.ctx_sys.get_mongo_db().collection(COLL_NAME);
+        collection.insert_one(user).await
+    }
+
+    pub async fn get_user(&self, username: String) -> Result<Option<User>, Error> {
         let collection: Collection<User> = self.ctx_sys.get_mongo_db().collection(COLL_NAME);
         collection.find_one(doc! { "username": &username }).await
     }
