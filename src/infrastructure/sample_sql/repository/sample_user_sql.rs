@@ -21,7 +21,7 @@ impl<'a> SampleUserSql<'a> {
         collection.insert_one(user).await
     }
 
-    pub async fn get_user(&self, username: String) -> Result<Option<User>, Error> {
+    pub async fn get_user(&self, username: &String) -> Result<Option<User>, Error> {
         let collection: Collection<User> = self.ctx_sys.get_mongo_db().collection(COLL_NAME);
         collection.find_one(doc! { "username": &username }).await
     }

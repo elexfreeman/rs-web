@@ -1,4 +1,4 @@
-use actix_web::{web, Error, error, HttpRequest, HttpResponse};
+use actix_web::{error, web, Error, HttpRequest, HttpResponse};
 
 use crate::infrastructure::sample_sql::entity::sample_user_e::User;
 use crate::system::ctx_sys::CtxSys;
@@ -41,12 +41,35 @@ impl<'a> SampleM<'a> {
             username: request.username.clone(),
             email: request.email.clone(),
         };
-        self.sample_user_sql.add_user(&user).await.map(|res| {
-            SampleRouteR::SampleAddUser::Response {
+        self.sample_user_sql
+            .add_user(&user)
+            .await
+            .map(|res| SampleRouteR::SampleAddUser::Response {
                 id: res.inserted_id.to_string(),
-            }
-        }).map_err(|e| error::ErrorInternalServerError(e))
+            })
+            .map_err(|e| error::ErrorInternalServerError(e))
     }
+
+    pub async fn get_user(
+        &self,
+        request: web::Json<SampleRouteR::SampleGetUser::Request>,
+    ) -> Result<SampleRouteR::SampleGetUser::Response, Error> {
+           let user_name = &request.username;
+           let user = self
+               .sample_user_sql
+               .get_user(user_name)
+               .await
+               .map_err(error::ErrorInternalServerError)?;
+
+            user.map(|u| SampleRouteR::SampleGetUser::Response {
+                first_name: u.first_name,
+                last_name: u.last_name,
+                username: u.username,
+                email: u.email,
+            })
+            .ok_or_else(|| error::ErrorBadRequest("User not found".to_string()))
+    }
+
     pub async fn init_user_data(&self) -> Result<(), Error> {
         self.sample_user_sql.init_user_data().await;
         Ok(())

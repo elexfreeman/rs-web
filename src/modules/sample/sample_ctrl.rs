@@ -69,6 +69,19 @@ impl<'a> SampleCtrl<'a> {
         .await
     }
 
+    async fn sample_route_get_user(
+        &self,
+        request: web::Json<R::SampleGetUser::Request>,
+    ) -> Result<HttpResponse, Error> {
+        log::info!("Request from /some_route_two");
+        fa_action!(
+            self.sample_m.get_user(request),
+            R::SampleGetUser::Response,
+            response_error
+        )
+        .await
+    }
+
 }
 
 #[post("/sample_route_one")]
@@ -109,4 +122,14 @@ pub async fn sample_route_add_user(
     let ctx = CtxSys::new(req);
     let ctrl = SampleCtrl::new(&ctx);
     ctrl.sample_route_add_user(body).await
+}
+
+#[post("/sample_user_get")]
+pub async fn sample_route_get_user(
+    body: web::Json<R::SampleGetUser::Request>,
+    req: HttpRequest,
+) -> Result<HttpResponse, Error> {
+    let ctx = CtxSys::new(req);
+    let ctrl = SampleCtrl::new(&ctx);
+    ctrl.sample_route_get_user(body).await
 }
