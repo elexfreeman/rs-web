@@ -1,9 +1,11 @@
-use crate::infrastructure::sample_sql::entity::sample_user_e::User;
-use crate::system::db_connect_sys::db_connect;
+use system;
+use system::mongo_connect_sys::db_connect;
 use mongodb::error::Error;
 use mongodb::{
     bson::doc, options::IndexOptions, results::InsertOneResult, Collection, IndexModel,
 };
+
+use crate::sample_sql::entity::sample_user_e::User;
 
 pub struct SampleUserSql {
 }

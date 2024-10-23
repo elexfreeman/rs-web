@@ -1,9 +1,9 @@
 use actix_web::{error, web, Error, HttpRequest, HttpResponse};
-
-use crate::infrastructure::sample_sql::entity::sample_user_e::User;
 use crate::system::ctx_sys::CtxSys;
 
-use crate::infrastructure::sample_sql::repository::sample_user_sql::SampleUserSql;
+use infrastructure::sample_sql::entity::sample_user_e::User;
+use infrastructure::sample_sql::repository::sample_user_sql::SampleUserSql;
+
 use crate::modules::sample::sample_r::SampleRouteR;
 
 pub struct SampleM<'a> {

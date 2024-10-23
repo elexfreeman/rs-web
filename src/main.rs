@@ -1,16 +1,16 @@
 use actix_web::{web, App, HttpServer};
 use mongodb::{bson::doc, options::IndexOptions, Client, Collection, IndexModel};
+use system;
+use infrastructure;
 
 mod modules;
 use modules::sample::sample_ctrl;
 
-mod infrastructure;
 mod interfaces;
 
-mod system;
 use crate::system::ctx_data_sys::CtxDataSys;
 
-
+//https://github.com/SeaQL/sea-orm/blob/master/examples/actix_example/api/Cargo.toml
 //async fn get_data() -> Result<ProductPageI, Error> {
 //    // URL, на который будем отправлять запрос
 //    let url = "http://lavacacao.ru:1337/api/page-data-common?populate=deep";

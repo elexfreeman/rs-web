@@ -1,0 +1,9 @@
+[package]
+name = "infrastructure"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+mongodb = "3"
+system = { path = "../system" }
+serde = { version = "1.0", features = ["derive"] }

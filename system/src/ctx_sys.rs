@@ -2,7 +2,7 @@ use std::sync::MutexGuard;
 use std::sync::Mutex;
 use actix_web::{ web::Data, HttpRequest};
 
-use crate::system::ctx_data_sys::CtxDataSys;
+use crate::ctx_data_sys::CtxDataSys;
 
 pub struct CtxSys{
     pub req: HttpRequest,

@@ -9,8 +9,8 @@ pub struct DbConnectSys {
 
 impl DbConnectSys {
     async fn new() -> Self {
-        let config = crate::system::config_sys::ConfigSys::get_instance();
-        crate::system::config_sys::print_config(&config);
+        let config = crate::config_sys::ConfigSys::get_instance();
+        crate::config_sys::print_config(&config);
         let client = Client::with_uri_str(config.get_mongo_uri())
             .await
             .expect("MongoDB failed to connect");

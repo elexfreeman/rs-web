@@ -30,7 +30,7 @@ pub struct ConfigSys {
 
 // Реализация статической переменной с ленивой инициализацией
 static INSTANCE: Lazy<Mutex<ConfigSys>> = Lazy::new(|| {
-    let config = crate::system::config_sys::load_config().unwrap();
+    let config = crate::config_sys::load_config().unwrap();
     Mutex::new(config)
 });
 

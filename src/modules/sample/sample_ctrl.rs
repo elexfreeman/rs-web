@@ -1,6 +1,6 @@
 use actix_web::{post, web, Error, HttpRequest, HttpResponse};
 
-use crate::fa_action;
+use crate::system::fa_action;
 use crate::system::ctx_sys::CtxSys;
 use crate::system::error_s::response_error;
 
@@ -22,7 +22,7 @@ impl<'a> SampleCtrl<'a> {
         &self,
         request: web::Json<R::SampleRoute::Request>,
     ) -> Result<HttpResponse, Error> {
-        log::info!("Request from /some_route");
+        log::info!("Request from /sample_route_one");
 
         let user_data = &self.ctx_sys.get_sys_data();
         log::info!("User data str: {}", user_data.sample_string);
@@ -60,7 +60,7 @@ impl<'a> SampleCtrl<'a> {
         &self,
         request: web::Json<R::SampleAddUser::Request>,
     ) -> Result<HttpResponse, Error> {
-        log::info!("Request from /some_route_two");
+        log::info!("Request from /sample_route_add_user");
         fa_action!(
             self.sample_m.add_user(request),
             R::SampleAddUser::Response,
@@ -73,7 +73,7 @@ impl<'a> SampleCtrl<'a> {
         &self,
         request: web::Json<R::SampleGetUser::Request>,
     ) -> Result<HttpResponse, Error> {
-        log::info!("Request from /some_route_two");
+        log::info!("Request from /sample_route_get_user");
         fa_action!(
             self.sample_m.get_user(request),
             R::SampleGetUser::Response,
