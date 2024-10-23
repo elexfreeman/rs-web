@@ -1,28 +1,27 @@
 use crate::infrastructure::sample_sql::entity::sample_user_e::User;
-use crate::system::ctx_sys::CtxSys;
+use crate::system::db_connect_sys::db_connect;
 use mongodb::error::Error;
 use mongodb::{
     bson::doc, options::IndexOptions, results::InsertOneResult, Collection, IndexModel,
 };
 
-pub struct SampleUserSql<'a> {
-    ctx_sys: &'a CtxSys,
+pub struct SampleUserSql {
 }
 
 const COLL_NAME: &str = "users";
 
-impl<'a> SampleUserSql<'a> {
-    pub fn new(ctx_sys: &'a CtxSys) -> Self {
-        Self { ctx_sys }
+impl<'a> SampleUserSql {
+    pub fn new() -> Self {
+        Self {  }
     }
 
     pub async fn add_user(&self, user: &User) -> Result<InsertOneResult, Error> {
-        let collection: Collection<User> = self.ctx_sys.get_mongo_db().collection(COLL_NAME);
+        let collection: Collection<User> = db_connect().await.db.collection(COLL_NAME);
         collection.insert_one(user).await
     }
 
     pub async fn get_user(&self, username: &String) -> Result<Option<User>, Error> {
-        let collection: Collection<User> = self.ctx_sys.get_mongo_db().collection(COLL_NAME);
+        let collection: Collection<User> = db_connect().await.db.collection(COLL_NAME);
         collection.find_one(doc! { "username": &username }).await
     }
 
@@ -33,8 +32,7 @@ impl<'a> SampleUserSql<'a> {
             .keys(doc! { "username": 1 })
             .options(options)
             .build();
-        self.ctx_sys
-            .get_mongo_db()
+        db_connect().await.db
             .collection::<User>(COLL_NAME)
             .create_index(model)
             .await

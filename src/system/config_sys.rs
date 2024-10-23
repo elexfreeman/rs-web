@@ -1,3 +1,6 @@
+use once_cell::sync::Lazy;
+use std::sync::Mutex;
+
 use std::env;
 use std::fs::File;
 use std::io::BufReader;
@@ -20,18 +23,34 @@ pub struct MongoConfig {
 }
 
 #[derive(Debug, Serialize, Deserialize ,Clone)]
-pub struct Config {
+pub struct ConfigSys {
     pub mongo_config: MongoConfig,
     pub app_config: AppConfig,
 }
 
-impl Config {
+// Реализация статической переменной с ленивой инициализацией
+static INSTANCE: Lazy<Mutex<ConfigSys>> = Lazy::new(|| {
+    let config = crate::system::config_sys::load_config().unwrap();
+    Mutex::new(config)
+});
+
+impl ConfigSys {
     pub fn get_mongo_uri(&self) -> String {
         format!(
             "mongodb://{}:{}",
             self.mongo_config.db_host, self.mongo_config.db_port
         )
     }
+
+    // Метод для доступа к экземпляру синглтона
+    pub fn get_instance() -> std::sync::MutexGuard<'static, ConfigSys> {
+        INSTANCE.lock().unwrap()
+    }
+
+    // Пример метода для изменения состояния синглтона
+//    pub fn set_value(&mut self, value: i32) {
+//        self.value = value;
+//    }
 }
 
 pub fn get_config_file_name(args: &[String]) -> Option<String> {
@@ -42,7 +61,8 @@ pub fn get_config_file_name(args: &[String]) -> Option<String> {
     }
     None
 }
-pub fn load_config() -> Result<Config, std::io::Error> {
+
+pub fn load_config() -> Result<ConfigSys, std::io::Error> {
     let mut config_file_name = String::from("config.json");
     let config_file_path = String::from("");
 
@@ -61,6 +81,6 @@ pub fn load_config() -> Result<Config, std::io::Error> {
     Ok(config)
 }
 
-pub fn print_config(config: &Config) {
+pub fn print_config(config: &ConfigSys) {
     println!("Config: {:?}", config);
 }

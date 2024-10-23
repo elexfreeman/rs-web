@@ -2,7 +2,7 @@ use actix_web::{web, App, HttpServer};
 use mongodb::{bson::doc, options::IndexOptions, Client, Collection, IndexModel};
 
 mod modules;
-use modules::sample::sample_ctrl::*;
+use modules::sample::sample_ctrl;
 
 mod infrastructure;
 mod interfaces;
@@ -10,7 +10,6 @@ mod interfaces;
 mod system;
 use crate::system::ctx_data_sys::CtxDataSys;
 
-use crate::infrastructure::sample_sql::entity::sample_user_e::User;
 
 //async fn get_data() -> Result<ProductPageI, Error> {
 //    // URL, на который будем отправлять запрос
@@ -45,21 +44,13 @@ use crate::infrastructure::sample_sql::entity::sample_user_e::User;
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     env_logger::init_from_env(env_logger::Env::new().default_filter_or("info"));
-    let config = crate::system::config_sys::load_config().unwrap();
+    let config = crate::system::config_sys::ConfigSys::get_instance();
     crate::system::config_sys::print_config(&config);
     let app_port = config.app_config.port;
 
-    let client = Client::with_uri_str(config.get_mongo_uri())
-        .await
-        .expect("MongoDB failed to connect");
-
-    let db = client.database(&config.mongo_config.db_name.clone());
-
+    
     let user_data = web::Data::new(CtxDataSys {
         sample_string: "default_value".to_string(),
-        client,
-        db,
-        config,
     });
 
     log::info!(
@@ -70,9 +61,9 @@ async fn main() -> std::io::Result<()> {
     HttpServer::new(move || {
         App::new()
             .app_data(user_data.clone())
-            .service(sample_route_one)
-            .service(sample_route_two)
-            .service(sample_init_user_data)
+            .service(sample_ctrl::sample_route_one)
+            .service(sample_ctrl::sample_route_two)
+            .service(sample_ctrl::sample_init_user_data)
     })
     .workers(4)
     .bind(format!("[::1]:{}", app_port))?

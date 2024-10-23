@@ -8,12 +8,12 @@ use crate::modules::sample::sample_r::SampleRouteR;
 
 pub struct SampleM<'a> {
     ctx_sys: &'a CtxSys,
-    sample_user_sql: SampleUserSql<'a>,
+    sample_user_sql: SampleUserSql,
 }
 
 impl<'a> SampleM<'a> {
     pub fn new(ctx_sys: &'a CtxSys) -> Self {
-        let sample_user_sql = SampleUserSql::new(&ctx_sys);
+        let sample_user_sql = SampleUserSql::new();
         SampleM {
             ctx_sys,
             sample_user_sql,
@@ -55,13 +55,11 @@ impl<'a> SampleM<'a> {
         request: web::Json<SampleRouteR::SampleGetUser::Request>,
     ) -> Result<SampleRouteR::SampleGetUser::Response, Error> {
            let user_name = &request.username;
-           let user = self
+           self
                .sample_user_sql
                .get_user(user_name)
-               .await
-               .map_err(error::ErrorInternalServerError)?;
-
-            user.map(|u| SampleRouteR::SampleGetUser::Response {
+               .await.unwrap()
+            .map(|u| SampleRouteR::SampleGetUser::Response {
                 first_name: u.first_name,
                 last_name: u.last_name,
                 username: u.username,
